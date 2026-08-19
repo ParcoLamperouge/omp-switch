@@ -129,7 +129,7 @@ export function Editor({
               }
             }}
             placeholder={t("profileNamePlaceholder")}
-            className="flex-1 rounded-xl border border-zinc-200/90 bg-zinc-50/50 px-3.5 py-1.5 text-base font-bold text-zinc-900 focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20 focus:outline-none dark:border-app-border dark:bg-app-card dark:text-zinc-100 dark:focus:bg-app-card transition"
+            className="flex-1 rounded-xl border border-app-border bg-app-card px-3.5 py-1.5 text-base font-bold text-zinc-900 focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none dark:text-zinc-100 transition"
           />
 
           {isEffective ? (
@@ -156,7 +156,7 @@ export function Editor({
           {onOpenModels && !isEditing && (
             <button
               onClick={onOpenModels}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+              className="flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-brand/40 hover:bg-app-card-subtle dark:text-zinc-200 transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               title={t("modelsManagerTitle")}
             >
               <span>{t("viewModelsLibraryBtn")}</span>
@@ -169,7 +169,7 @@ export function Editor({
               <button
                 onClick={handleCancelEdit}
                 disabled={saving}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-300 bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+                className="flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-app-card-subtle dark:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>{isDirty ? t("discardChangesBtn") : t("exitEditBtn")}</span>
@@ -177,10 +177,10 @@ export function Editor({
               <button
                 onClick={handleSave}
                 disabled={saving || !isDirty}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold shadow-sm transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                   isDirty
                     ? "bg-brand hover:bg-brand-hover active:scale-[0.98] text-brand-fg"
-                    : "cursor-not-allowed bg-zinc-400 dark:bg-zinc-700"
+                    : "cursor-not-allowed bg-zinc-400 dark:bg-zinc-700 text-white"
                 }`}
               >
                 {saveSuccess ? (
@@ -199,7 +199,7 @@ export function Editor({
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+              className="rounded-xl border border-app-border bg-app-card p-2 text-zinc-700 hover:bg-app-card-subtle hover:border-brand/40 dark:text-zinc-200 transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               title={t("editConfigBtn")}
               aria-label={t("editConfigBtn")}
             >
@@ -208,7 +208,6 @@ export function Editor({
           )}
         </div>
       </div>
-
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden min-h-0">
@@ -219,7 +218,7 @@ export function Editor({
               onChange={(e) => setConfigYml(e.target.value)}
               spellCheck={false}
               placeholder={t("configPlaceholder")}
-              className="flex-1 w-full resize-none rounded-2xl border border-zinc-300/90 bg-white p-4 font-mono text-sm leading-relaxed text-zinc-900 focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none dark:border-app-border dark:bg-app-card dark:text-zinc-100 shadow-2xs"
+              className="flex-1 w-full resize-none rounded-2xl border border-app-border bg-app-card p-4 font-mono text-sm leading-relaxed text-zinc-900 focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none dark:text-zinc-100 shadow-2xs"
             />
             <div className="mt-2 flex items-center justify-between text-xs text-zinc-400">
               <span className="font-mono">config.yml</span>

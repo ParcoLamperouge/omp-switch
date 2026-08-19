@@ -69,7 +69,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
     <div className="flex flex-1 flex-col gap-5 overflow-y-auto pr-1">
       {/* Summary */}
       <div className="grid grid-cols-2 gap-3.5">
-        <div className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 bg-app-card p-4 dark:border-app-border dark:bg-app-card shadow-2xs">
+        <div className="flex items-center gap-3 rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-muted text-brand">
             <Server className="h-5 w-5" />
           </div>
@@ -83,7 +83,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 bg-app-card p-4 dark:border-app-border dark:bg-app-card shadow-2xs">
+        <div className="flex items-center gap-3 rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
             <Layers className="h-5 w-5" />
           </div>
@@ -103,15 +103,15 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
         {providers.map((provider) => (
           <div
             key={provider.name}
-            className="rounded-2xl border border-zinc-200/80 bg-white p-4.5 shadow-2xs dark:border-app-border dark:bg-app-card"
+            className="rounded-2xl border border-app-border bg-app-card p-4.5 shadow-2xs"
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3 dark:border-zinc-800/70">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-app-border pb-3">
               <div className="flex items-center gap-2.5">
                 <span className="rounded-xl bg-brand-muted border border-brand-muted-border px-3 py-1 text-sm font-bold text-brand-muted-fg">
                   {provider.name}
                 </span>
                 {provider.api && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                  <span className="inline-flex items-center gap-1 rounded-lg border border-app-border bg-app-card-subtle px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-300">
                     <Radio className="h-3 w-3" />
                     {provider.api}
                   </span>
@@ -125,7 +125,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
                     {t("keyConfigured")}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2.5 py-0.5 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-app-border bg-app-card-subtle px-2.5 py-0.5 text-zinc-500 dark:text-zinc-400">
                     {t("noKey")}
                   </span>
                 )}
@@ -150,7 +150,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
                   {provider.models.map((m) => (
                     <div
                       key={m.id}
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200/90 bg-zinc-50/60 px-3 py-1.5 font-mono text-xs text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950/40 dark:text-zinc-200 shadow-2xs"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card-subtle px-3 py-1.5 font-mono text-xs text-zinc-800 dark:text-zinc-200 shadow-2xs"
                     >
                       <CheckCircle2 className="h-3 w-3 text-emerald-500" />
                       <span className="font-semibold">{m.id}</span>
@@ -167,7 +167,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
       </div>
 
       {/* Readonly Raw YAML Collapsible */}
-      <div className="mt-auto border-t border-zinc-100 pt-3 dark:border-zinc-800/70">
+      <div className="mt-auto border-t border-app-border pt-3">
         <button
           onClick={() => setShowRaw(!showRaw)}
           className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition"
@@ -177,7 +177,7 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
         </button>
 
         {showRaw && (
-          <pre className="mt-2 max-h-60 overflow-auto rounded-xl border border-zinc-200/80 bg-zinc-50 p-3.5 font-mono text-xs leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+          <pre className="mt-2 max-h-60 overflow-auto rounded-xl border border-app-border bg-app-card p-3.5 font-mono text-xs leading-relaxed text-zinc-800 dark:text-zinc-300">
             {modelsYml}
           </pre>
         )}

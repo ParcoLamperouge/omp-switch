@@ -121,7 +121,7 @@ export function ProfileList({
           className={`group flex w-full items-center justify-between rounded-xl p-2.5 text-left text-sm font-medium transition duration-150 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
             activeView === "models"
               ? "bg-brand text-brand-fg shadow-sm"
-              : "bg-white text-zinc-800 border border-zinc-200/90 hover:border-zinc-300 hover:bg-zinc-100/70 dark:bg-app-card dark:border-app-border dark:text-zinc-200 dark:hover:bg-app-card-subtle dark:hover:border-zinc-700 shadow-2xs"
+              : "bg-app-card text-zinc-800 border border-app-border hover:border-brand/40 hover:bg-app-card-subtle dark:text-zinc-200 shadow-2xs"
           }`}
         >
           <div className="flex items-center gap-2.5 truncate">
@@ -362,7 +362,7 @@ export function ProfileList({
                 if (e.key === "Escape") setNewName("");
               }}
               placeholder={t("newProfilePlaceholder")}
-              className="flex-1 rounded-xl border border-zinc-300/90 bg-white px-2.5 py-1.5 text-xs text-zinc-900 focus:border-brand focus:ring-1 focus:ring-brand/20 focus:outline-none dark:border-zinc-700 dark:bg-app-card dark:text-zinc-100"
+              className="flex-1 rounded-xl border border-app-border bg-app-card px-2.5 py-1.5 text-xs text-zinc-900 focus:border-brand focus:ring-1 focus:ring-brand/20 focus:outline-none dark:text-zinc-100"
             />
             <button
               onClick={handleCreate}
@@ -381,7 +381,7 @@ export function ProfileList({
             disabled={!status.liveExists}
             className={`w-full rounded-xl px-2.5 py-1.5 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
               status.liveExists
-                ? "bg-zinc-800 text-white hover:bg-zinc-900 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                ? "bg-zinc-800 text-white hover:bg-zinc-900 dark:bg-app-card-subtle dark:border dark:border-app-border dark:text-zinc-100 dark:hover:bg-app-card"
                 : "cursor-not-allowed bg-zinc-200 text-zinc-400 dark:bg-zinc-850 dark:text-zinc-600"
             }`}
           >
@@ -399,7 +399,7 @@ export function ProfileList({
                   if (e.key === "Escape") setImportOpen(false);
                 }}
                 placeholder={t("importProfilePlaceholder")}
-                className="w-full rounded-xl border border-zinc-300 px-2.5 py-1.5 text-xs dark:border-zinc-700 dark:bg-app-card"
+                className="w-full rounded-xl border border-app-border bg-app-card px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-brand focus:outline-none"
               />
               <button
                 onClick={handleImport}
@@ -415,14 +415,14 @@ export function ProfileList({
         <div className="flex items-center gap-1.5">
           <button
             onClick={onRevealLive}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-app-border bg-app-card px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-app-card-subtle hover:border-brand/40 dark:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
           >
             <FolderOpen size={14} />
             <span>{t("openLiveDirBtn")}</span>
           </button>
           <button
             onClick={onOpenSettings}
-            className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+            className="rounded-xl border border-app-border bg-app-card p-2 text-zinc-700 hover:bg-app-card-subtle hover:border-brand/40 dark:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
             title={t("settingsBtn")}
             aria-label={t("settingsBtn")}
           >

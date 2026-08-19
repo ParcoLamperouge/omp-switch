@@ -85,9 +85,9 @@
   [data-theme="ocean"].dark,
   .dark[data-theme="ocean"] {
     --brand-color: #06b6d4;
-    --brand-hover: #0891b2;
-    --brand-active: #0e7490;
-    --brand-fg: #ffffff;
+    --brand-hover: #22d3ee;
+    --brand-active: #0891b2;
+    --brand-fg: #040d16;
     --brand-muted: rgba(6, 182, 212, 0.15);
     --brand-muted-border: rgba(6, 182, 212, 0.35);
     --brand-muted-fg: #67e8f9;
@@ -124,8 +124,8 @@
   [data-theme="amethyst"].dark,
   .dark[data-theme="amethyst"] {
     --brand-color: #a855f7;
-    --brand-hover: #9333ea;
-    --brand-active: #7e22ce;
+    --brand-hover: #c084fc;
+    --brand-active: #9333ea;
     --brand-fg: #ffffff;
     --brand-muted: rgba(168, 85, 247, 0.15);
     --brand-muted-border: rgba(168, 85, 247, 0.35);

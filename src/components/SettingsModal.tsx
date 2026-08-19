@@ -45,8 +45,8 @@ export function SettingsModal({ isOpen, onClose }: Props) {
     {
       id: "ocean",
       labelKey: "themeOcean",
-      color: "bg-cyan-500",
-      ring: "ring-cyan-400",
+      color: "bg-cyan-600",
+      ring: "ring-cyan-500",
     },
     {
       id: "amethyst",
@@ -71,9 +71,9 @@ export function SettingsModal({ isOpen, onClose }: Props) {
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-md rounded-3xl border border-zinc-200/80 bg-white p-6 shadow-2xl dark:border-app-border dark:bg-app-modal animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-md rounded-3xl border border-app-border bg-app-modal p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-app-border">
+        <div className="flex items-center justify-between pb-4 border-b border-app-border">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-muted text-brand">
               <Settings className="h-4 w-4" />
@@ -84,7 +84,8 @@ export function SettingsModal({ isOpen, onClose }: Props) {
           </div>
           <button
             onClick={onClose}
-            className="rounded-xl p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition"
+            className="rounded-xl p-1.5 text-zinc-400 hover:bg-app-card-subtle hover:text-zinc-700 dark:hover:bg-app-card-subtle dark:hover:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
+            aria-label={t("closeSettings")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -99,7 +100,7 @@ export function SettingsModal({ isOpen, onClose }: Props) {
               <span>{t("appearanceMode")}</span>
             </label>
 
-            <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 p-1 dark:border-app-border dark:bg-zinc-900">
+            <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-app-border bg-app-card-subtle p-1">
               {modes.map((m) => {
                 const Icon = m.icon;
                 const isSelected = mode === m.id;
@@ -108,9 +109,9 @@ export function SettingsModal({ isOpen, onClose }: Props) {
                     key={m.id}
                     type="button"
                     onClick={() => setMode(m.id)}
-                    className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition ${
+                    className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                       isSelected
-                        ? "bg-white text-zinc-900 shadow-xs dark:bg-zinc-800 dark:text-zinc-100 font-bold"
+                        ? "bg-app-modal text-zinc-900 shadow-xs dark:bg-app-card dark:text-zinc-100 font-bold"
                         : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                     }`}
                   >
@@ -137,10 +138,10 @@ export function SettingsModal({ isOpen, onClose }: Props) {
                     key={cs.id}
                     type="button"
                     onClick={() => setColorScheme(cs.id)}
-                    className={`flex flex-col items-center gap-2 rounded-2xl border p-2.5 text-center transition ${
+                    className={`flex flex-col items-center gap-2 rounded-2xl border p-2.5 text-center transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                       isSelected
                         ? "border-brand bg-brand-muted ring-1 ring-brand"
-                        : "border-zinc-200/80 bg-white hover:border-zinc-300 dark:border-app-border dark:bg-app-card dark:hover:border-zinc-700"
+                        : "border-app-border bg-app-card hover:border-brand/40 dark:bg-app-card"
                     }`}
                   >
                     <div className="flex items-center justify-center">
@@ -164,13 +165,13 @@ export function SettingsModal({ isOpen, onClose }: Props) {
               <span>{t("languageSetting")}</span>
             </label>
 
-            <div className="grid grid-cols-2 gap-1.5 rounded-2xl border border-zinc-200/80 bg-zinc-100/80 p-1 dark:border-app-border dark:bg-zinc-900">
+            <div className="grid grid-cols-2 gap-1.5 rounded-2xl border border-app-border bg-app-card-subtle p-1">
               <button
                 type="button"
                 onClick={() => setLang("zh")}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                   lang === "zh"
-                    ? "bg-white text-brand shadow-xs dark:bg-zinc-800 dark:text-brand font-bold"
+                    ? "bg-app-modal text-brand shadow-xs dark:bg-app-card dark:text-brand font-bold"
                     : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
@@ -181,9 +182,9 @@ export function SettingsModal({ isOpen, onClose }: Props) {
               <button
                 type="button"
                 onClick={() => setLang("en")}
-                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                   lang === "en"
-                    ? "bg-white text-brand shadow-xs dark:bg-zinc-800 dark:text-brand font-bold"
+                    ? "bg-app-modal text-brand shadow-xs dark:bg-app-card dark:text-brand font-bold"
                     : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
@@ -194,7 +195,7 @@ export function SettingsModal({ isOpen, onClose }: Props) {
           </div>
 
           {/* About section */}
-          <div className="rounded-2xl border border-zinc-100 bg-zinc-50/80 p-3.5 dark:border-app-border dark:bg-app-card">
+          <div className="rounded-2xl border border-app-border bg-app-card-subtle p-3.5">
             <div className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
               <Info className="h-3.5 w-3.5 text-zinc-400" />
               <span>{t("aboutApp")}</span>
@@ -210,10 +211,10 @@ export function SettingsModal({ isOpen, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end pt-3 border-t border-zinc-100 dark:border-app-border">
+        <div className="flex justify-end pt-3 border-t border-app-border">
           <button
             onClick={onClose}
-            className="rounded-xl bg-brand px-4.5 py-1.5 text-xs font-bold text-brand-fg shadow-xs hover:bg-brand-hover transition"
+            className="rounded-xl bg-brand px-4.5 py-1.5 text-xs font-bold text-brand-fg shadow-xs hover:bg-brand-hover transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
           >
             {t("closeSettings")}
           </button>

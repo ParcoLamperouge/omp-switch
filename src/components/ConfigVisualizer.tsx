@@ -243,18 +243,18 @@ export function ConfigVisualizer({
             return (
               <div
                 key={role}
-                className="flex flex-col justify-between rounded-2xl border border-zinc-200/80 bg-white p-4 transition duration-150 hover:border-zinc-300 dark:border-app-border dark:bg-app-card dark:hover:border-zinc-700 shadow-2xs"
+                className="flex flex-col justify-between rounded-2xl border border-app-border bg-app-card p-4 transition duration-150 hover:border-brand/40 shadow-2xs"
               >
                 {/* Role Header */}
-                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-zinc-100 dark:border-zinc-800/70">
+                <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-app-border">
                   <div className="flex items-center gap-2">
                     <span
                       className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-bold ${
                         role === "default"
-                          ? "bg-brand-muted text-brand-muted-fg"
+                          ? "bg-brand-muted text-brand-muted-fg border border-brand-muted-border"
                           : role === "fast"
-                          ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300"
-                          : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                          ? "bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200/70 dark:border-sky-800/60"
+                          : "bg-app-card-subtle text-zinc-700 dark:text-zinc-300 border border-app-border"
                       }`}
                     >
                       {role}
@@ -278,7 +278,6 @@ export function ConfigVisualizer({
                   )}
                 </div>
 
-
                 {/* Controls Area */}
                 <div className="space-y-3 pt-3">
                   {/* Large Model Selector */}
@@ -290,7 +289,7 @@ export function ConfigVisualizer({
                       <select
                         value={baseModelRef}
                         onChange={(e) => handleModelChange(role, e.target.value, ref.effort)}
-                        className="w-full appearance-none rounded-xl border border-zinc-300/90 bg-white py-2.5 pl-3.5 pr-8 font-mono text-sm font-semibold text-zinc-900 shadow-2xs transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-zinc-700 dark:bg-app-card-subtle dark:text-zinc-100"
+                        className="w-full appearance-none rounded-xl border border-app-border bg-app-card py-2.5 pl-3.5 pr-8 font-mono text-sm font-semibold text-zinc-900 shadow-2xs transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 dark:bg-app-card-subtle dark:text-zinc-100"
                       >
                         {!isKnownModel && (
                           <option value={baseModelRef}>
@@ -321,7 +320,7 @@ export function ConfigVisualizer({
                       <Brain className="h-3.5 w-3.5 text-brand" />
                       <span>{t("thinkingEffortLabel")}</span>
                     </label>
-                    <div className="grid grid-cols-6 rounded-xl border border-zinc-200/90 bg-zinc-100/80 p-0.5 dark:border-zinc-800 dark:bg-app-card-subtle">
+                    <div className="grid grid-cols-6 rounded-xl border border-app-border bg-app-card-subtle p-0.5">
                       {EFFORT_LEVELS.map((eff) => {
                         const isSelected = currentEffort === eff.value;
                         return (
@@ -329,10 +328,10 @@ export function ConfigVisualizer({
                             key={eff.value}
                             type="button"
                             onClick={() => handleEffortChange(role, baseModelRef, eff.value)}
-                            className={`rounded-lg py-1.5 text-center text-xs font-medium transition ${
+                            className={`rounded-lg py-1.5 text-center text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                               isSelected
-                                ? "bg-zinc-900 text-white font-semibold shadow-xs dark:bg-zinc-100 dark:text-zinc-900"
-                                : "text-zinc-600 hover:text-zinc-900 hover:bg-white/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-750"
+                                ? "bg-brand text-brand-fg font-semibold shadow-xs"
+                                : "text-zinc-600 hover:text-zinc-900 hover:bg-app-card dark:text-zinc-400 dark:hover:text-zinc-100"
                             }`}
                           >
                             {eff.label}
@@ -350,7 +349,7 @@ export function ConfigVisualizer({
 
       {/* Enabled Models Section */}
       {totalEnabled > 0 && (
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-2xs dark:border-app-border dark:bg-app-card">
+        <div className="rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -358,7 +357,7 @@ export function ConfigVisualizer({
                 {t("enabledModelsTitle")}
               </h3>
             </div>
-            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+            <span className="rounded-full bg-app-card-subtle border border-app-border px-2 py-0.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
               {t("totalCount", { count: totalEnabled })}
             </span>
           </div>
@@ -367,10 +366,10 @@ export function ConfigVisualizer({
             {parsed.enabledModels.map((ref, idx) => (
               <div
                 key={idx}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200/90 bg-zinc-50/70 px-2.5 py-1.5 font-mono text-xs text-zinc-800 shadow-2xs dark:border-app-border dark:bg-app-card-subtle dark:text-zinc-200"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card-subtle px-2.5 py-1.5 font-mono text-xs text-zinc-800 shadow-2xs dark:text-zinc-200"
               >
                 {ref.provider && (
-                  <span className="rounded-md bg-zinc-200/80 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <span className="rounded-md bg-app-card border border-app-border px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
                     {ref.provider}
                   </span>
                 )}
@@ -388,7 +387,7 @@ export function ConfigVisualizer({
 
       {/* Provider Priority Order Section */}
       {parsed.modelProviderOrder.length > 0 && (
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-2xs dark:border-zinc-800/80 dark:bg-zinc-900/60">
+        <div className="rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
           <div className="mb-3 flex items-center gap-2">
             <Layers className="h-4 w-4 text-indigo-500" />
             <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
@@ -398,7 +397,7 @@ export function ConfigVisualizer({
           <div className="flex flex-wrap items-center gap-2">
             {parsed.modelProviderOrder.map((provider, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-xl border border-indigo-200/80 bg-indigo-50/80 px-3 py-1 text-xs font-bold text-indigo-700 dark:border-indigo-900/40 dark:bg-indigo-950/40 dark:text-indigo-300">
+                <span className="inline-flex items-center gap-1 rounded-xl border border-brand-muted-border bg-brand-muted px-3 py-1 text-xs font-bold text-brand-muted-fg">
                   <span className="text-[10px] opacity-75">#{idx + 1}</span>
                   {provider}
                 </span>
@@ -413,7 +412,7 @@ export function ConfigVisualizer({
 
       {/* Other Config Entries if any */}
       {parsed.otherEntries.length > 0 && (
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-2xs dark:border-zinc-800/80 dark:bg-zinc-900/60">
+        <div className="rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
             {t("otherConfigTitle")}
           </h3>
@@ -421,7 +420,7 @@ export function ConfigVisualizer({
             {parsed.otherEntries.map(([key, val]) => (
               <div
                 key={key}
-                className="flex items-start justify-between rounded-xl bg-zinc-50 px-3 py-1.5 text-xs dark:bg-zinc-950/50"
+                className="flex items-start justify-between rounded-xl bg-app-card-subtle border border-app-border px-3 py-1.5 text-xs"
               >
                 <span className="font-mono font-medium text-zinc-600 dark:text-zinc-400">
                   {key}
@@ -436,7 +435,7 @@ export function ConfigVisualizer({
       )}
 
       {/* Readonly Raw YAML Collapsible */}
-      <div className="mt-auto border-t border-zinc-100 pt-3 dark:border-zinc-800/70">
+      <div className="mt-auto border-t border-app-border pt-3">
         <button
           onClick={() => setShowRaw(!showRaw)}
           className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition"
@@ -446,7 +445,7 @@ export function ConfigVisualizer({
         </button>
 
         {showRaw && (
-          <pre className="mt-2 max-h-60 overflow-auto rounded-xl border border-zinc-200/80 bg-zinc-50 p-3.5 font-mono text-xs leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300">
+          <pre className="mt-2 max-h-60 overflow-auto rounded-xl border border-app-border bg-app-card p-3.5 font-mono text-xs leading-relaxed text-zinc-800 dark:text-zinc-300">
             {configYml}
           </pre>
         )}
