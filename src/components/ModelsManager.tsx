@@ -60,6 +60,23 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
     setError(null);
   }
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        if (isDirty && !saving) {
+          handleSave();
+        }
+      }
+      if (e.key === "Escape" && isEditing) {
+        e.preventDefault();
+        handleCancel();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDirty, saving, isEditing, content]);
+
   return (
     <div className="flex h-full flex-col gap-4 overflow-hidden">
       {/* Header */}
@@ -90,7 +107,7 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
               <button
                 onClick={handleCancel}
                 disabled={saving}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-300 bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition"
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-300 bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>{isDirty ? t("discardChangesBtn") : t("exitEditBtn")}</span>
@@ -98,7 +115,7 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
               <button
                 onClick={handleSave}
                 disabled={saving || !isDirty}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition ${
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                   isDirty
                     ? "bg-brand hover:bg-brand-hover active:scale-[0.98] text-brand-fg"
                     : "cursor-not-allowed bg-zinc-400 dark:bg-zinc-700"
@@ -120,7 +137,7 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg shadow-xs hover:bg-brand-hover active:scale-[0.98] transition"
+              className="flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-semibold text-brand-fg shadow-xs hover:bg-brand-hover active:scale-[0.98] transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
             >
               <Edit3 className="h-3.5 w-3.5" />
               <span>{t("editModelsBtn")}</span>
@@ -128,6 +145,7 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
           )}
         </div>
       </div>
+
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden min-h-0">

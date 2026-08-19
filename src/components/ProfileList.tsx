@@ -109,15 +109,16 @@ export function ProfileList({
           </span>
           <button
             onClick={onOpenSettings}
-            className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-200/70 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition"
+            className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-200/70 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
             title={t("settingsBtn")}
+            aria-label={t("settingsBtn")}
           >
             <Settings className="h-3.5 w-3.5" />
           </button>
         </div>
         <button
           onClick={onSelectModels}
-          className={`group flex w-full items-center justify-between rounded-xl p-2.5 text-left text-sm font-medium transition duration-150 ${
+          className={`group flex w-full items-center justify-between rounded-xl p-2.5 text-left text-sm font-medium transition duration-150 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
             activeView === "models"
               ? "bg-brand text-brand-fg shadow-sm"
               : "bg-white text-zinc-800 border border-zinc-200/90 hover:border-zinc-300 hover:bg-zinc-100/70 dark:bg-app-card dark:border-app-border dark:text-zinc-200 dark:hover:bg-app-card-subtle dark:hover:border-zinc-700 shadow-2xs"
@@ -209,6 +210,12 @@ export function ProfileList({
                     }`}
                   >
                     <span className="flex flex-1 items-center gap-2 truncate">
+                      {isEffective && (
+                        <span className="relative flex h-2 w-2 shrink-0">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                        </span>
+                      )}
                       <span className="truncate font-medium text-xs text-zinc-800 dark:text-zinc-200">
                         {p.name}
                       </span>
@@ -221,8 +228,8 @@ export function ProfileList({
                           }
                           className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-tight ${
                             isEffective
-                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300"
-                              : "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-300/60 dark:border-emerald-800/60"
+                              : "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                           }`}
                         >
                           {activeLabel}
@@ -231,7 +238,7 @@ export function ProfileList({
                       {isDrift && (
                         <span
                           title={t("driftTooltip")}
-                          className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                          className="shrink-0 rounded-full bg-amber-100 border border-amber-300/80 px-1.5 py-0.5 text-[10px] font-semibold text-amber-900 dark:bg-amber-950/60 dark:border-amber-800/80 dark:text-amber-200"
                         >
                           {t("driftStatus")}
                         </span>
@@ -246,8 +253,9 @@ export function ProfileList({
                             e.stopPropagation();
                             onSwitchProfile(p.id);
                           }}
-                          className="rounded-md p-1 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950/60 dark:hover:text-emerald-300 transition"
+                          className="rounded-md p-1 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-950/60 dark:hover:text-emerald-200 transition focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-hidden"
                           title={t("applyProfileBtn")}
+                          aria-label={t("applyProfileBtn")}
                         >
                           <Check size={13} strokeWidth={2.5} />
                         </button>
@@ -257,8 +265,9 @@ export function ProfileList({
                           e.stopPropagation();
                           startDuplicate(p.id, p.name);
                         }}
-                        className="rounded-md p-1 text-zinc-400 hover:bg-zinc-200/80 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-700 dark:hover:text-zinc-200 transition"
+                        className="rounded-md p-1 text-zinc-500 hover:bg-zinc-200/80 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-100 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
                         title={t("copyProfile")}
+                        aria-label={t("copyProfile")}
                       >
                         <Copy size={13} />
                       </button>
@@ -267,8 +276,9 @@ export function ProfileList({
                           e.stopPropagation();
                           startDelete(p.id);
                         }}
-                        className="rounded-md p-1 text-zinc-400 hover:bg-rose-100 hover:text-rose-600 dark:text-zinc-500 dark:hover:bg-rose-950/60 dark:hover:text-rose-400 transition"
+                        className="rounded-md p-1 text-zinc-500 hover:text-rose-600 hover:bg-zinc-200/80 dark:text-zinc-400 dark:hover:text-rose-400 dark:hover:bg-zinc-800 transition focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-hidden"
                         title={t("deleteProfile")}
+                        aria-label={t("deleteProfile")}
                       >
                         <Trash2 size={13} />
                       </button>
@@ -312,19 +322,22 @@ export function ProfileList({
                         autoFocus
                         value={dupName}
                         onChange={(e) => setDupName(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && confirmDuplicate()}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") confirmDuplicate();
+                          if (e.key === "Escape") setDupId(null);
+                        }}
                         className="flex-1 rounded-lg border border-zinc-300 px-2 py-1 text-xs focus:border-brand focus:outline-none dark:border-zinc-700 dark:bg-app-card"
                       />
                       <button
                         onClick={confirmDuplicate}
                         disabled={!dupName.trim()}
-                        className="rounded-lg bg-brand px-2 py-1 text-xs font-semibold text-brand-fg hover:bg-brand-hover disabled:bg-zinc-400"
+                        className="rounded-lg bg-brand px-2 py-1 text-xs font-semibold text-brand-fg hover:bg-brand-hover disabled:bg-zinc-400 transition"
                       >
                         {t("confirmBtn")}
                       </button>
                       <button
                         onClick={() => setDupId(null)}
-                        className="rounded-lg bg-zinc-200 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-200"
+                        className="rounded-lg bg-zinc-200 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-200 transition"
                       >
                         {t("cancelBtn")}
                       </button>
@@ -344,14 +357,17 @@ export function ProfileList({
             <input
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreate();
+                if (e.key === "Escape") setNewName("");
+              }}
               placeholder={t("newProfilePlaceholder")}
               className="flex-1 rounded-xl border border-zinc-300/90 bg-white px-2.5 py-1.5 text-xs text-zinc-900 focus:border-brand focus:ring-1 focus:ring-brand/20 focus:outline-none dark:border-zinc-700 dark:bg-app-card dark:text-zinc-100"
             />
             <button
               onClick={handleCreate}
               disabled={creating || !newName.trim()}
-              className="flex items-center gap-1 rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-brand-fg shadow-xs hover:bg-brand-hover disabled:bg-zinc-400 dark:disabled:bg-zinc-700 transition"
+              className="flex items-center gap-1 rounded-xl bg-brand px-3 py-1.5 text-xs font-semibold text-brand-fg shadow-xs hover:bg-brand-hover disabled:bg-zinc-400 dark:disabled:bg-zinc-700 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>{t("newProfileBtn")}</span>
@@ -363,7 +379,7 @@ export function ProfileList({
           <button
             onClick={() => setImportOpen(!importOpen)}
             disabled={!status.liveExists}
-            className={`w-full rounded-xl px-2.5 py-1.5 text-xs font-semibold transition ${
+            className={`w-full rounded-xl px-2.5 py-1.5 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
               status.liveExists
                 ? "bg-zinc-800 text-white hover:bg-zinc-900 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 : "cursor-not-allowed bg-zinc-200 text-zinc-400 dark:bg-zinc-850 dark:text-zinc-600"
@@ -378,7 +394,10 @@ export function ProfileList({
                 autoFocus
                 value={importName}
                 onChange={(e) => setImportName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleImport()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleImport();
+                  if (e.key === "Escape") setImportOpen(false);
+                }}
                 placeholder={t("importProfilePlaceholder")}
                 className="w-full rounded-xl border border-zinc-300 px-2.5 py-1.5 text-xs dark:border-zinc-700 dark:bg-app-card"
               />
@@ -396,15 +415,16 @@ export function ProfileList({
         <div className="flex items-center gap-1.5">
           <button
             onClick={onRevealLive}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
           >
             <FolderOpen size={14} />
             <span>{t("openLiveDirBtn")}</span>
           </button>
           <button
             onClick={onOpenSettings}
-            className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition"
+            className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
             title={t("settingsBtn")}
+            aria-label={t("settingsBtn")}
           >
             <Settings size={14} />
           </button>
@@ -413,3 +433,4 @@ export function ProfileList({
     </div>
   );
 }
+

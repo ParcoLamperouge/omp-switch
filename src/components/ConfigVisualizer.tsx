@@ -174,6 +174,10 @@ export function ConfigVisualizer({
                 placeholder={t("roleNamePlaceholder")}
                 value={newRoleName}
                 onChange={(e) => setNewRoleName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleAddRoleSubmit();
+                  if (e.key === "Escape") setAddingRole(false);
+                }}
                 className="rounded-xl border border-zinc-300 bg-white px-3 py-2 text-xs text-zinc-900 focus:border-brand focus:outline-none dark:border-zinc-700 dark:bg-app-card-subtle dark:text-zinc-100"
               />
               <select
@@ -265,13 +269,15 @@ export function ConfigVisualizer({
                   {onUpdateConfigYml && role !== "default" && (
                     <button
                       onClick={() => handleDeleteRole(role)}
-                      className="rounded-lg p-1 text-zinc-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition"
-                      title="删除此角色"
+                      className="rounded-lg p-1 text-zinc-500 hover:text-rose-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-rose-400 dark:hover:bg-zinc-800 transition focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-hidden"
+                      title={t("deleteProfile")}
+                      aria-label={t("deleteProfile")}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
                 </div>
+
 
                 {/* Controls Area */}
                 <div className="space-y-3 pt-3">

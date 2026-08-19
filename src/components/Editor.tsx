@@ -98,6 +98,23 @@ export function Editor({
   const isDirty = name !== profile.name || configYml !== profile.configYml;
   const isEffective = effectiveId === profile.id;
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        if (isDirty && !saving) {
+          handleSave();
+        }
+      }
+      if (e.key === "Escape" && isEditing) {
+        e.preventDefault();
+        handleCancelEdit();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDirty, saving, isEditing, name, configYml]);
+
   return (
     <div className="flex h-full flex-col gap-3.5 overflow-hidden">
       {/* Top Header */}
@@ -116,14 +133,18 @@ export function Editor({
           />
 
           {isEffective ? (
-            <span className="flex items-center gap-1.5 shrink-0 rounded-full border border-emerald-300/60 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300 shadow-2xs">
+            <span className="flex items-center gap-1.5 shrink-0 rounded-full border border-emerald-300/80 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-200 shadow-2xs">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              </span>
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>{t("activeStatus")}</span>
             </span>
           ) : activeId === profile.id ? (
             <span
               title={t("lastSwitchedTooltip")}
-              className="shrink-0 rounded-full bg-zinc-200/80 px-2.5 py-1 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+              className="shrink-0 rounded-full bg-zinc-200/80 px-2.5 py-1 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
             >
               {t("lastSwitchedStatus")}
             </span>
@@ -135,7 +156,7 @@ export function Editor({
           {onOpenModels && !isEditing && (
             <button
               onClick={onOpenModels}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 px-3 py-1.5 text-xs font-medium text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-300 dark:hover:bg-app-card-subtle transition shadow-2xs"
+              className="flex items-center gap-1.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               title={t("modelsManagerTitle")}
             >
               <span>{t("viewModelsLibraryBtn")}</span>
@@ -148,7 +169,7 @@ export function Editor({
               <button
                 onClick={handleCancelEdit}
                 disabled={saving}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-300 bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition"
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-300 bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
                 <span>{isDirty ? t("discardChangesBtn") : t("exitEditBtn")}</span>
@@ -156,7 +177,7 @@ export function Editor({
               <button
                 onClick={handleSave}
                 disabled={saving || !isDirty}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition ${
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden ${
                   isDirty
                     ? "bg-brand hover:bg-brand-hover active:scale-[0.98] text-brand-fg"
                     : "cursor-not-allowed bg-zinc-400 dark:bg-zinc-700"
@@ -178,14 +199,16 @@ export function Editor({
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition shadow-2xs"
+              className="rounded-xl border border-zinc-200/90 bg-white p-2 text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300 dark:border-app-border dark:bg-app-card dark:text-zinc-200 dark:hover:bg-app-card-subtle transition shadow-2xs focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
               title={t("editConfigBtn")}
+              aria-label={t("editConfigBtn")}
             >
               <Edit3 className="h-4 w-4" />
             </button>
           )}
         </div>
       </div>
+
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden min-h-0">

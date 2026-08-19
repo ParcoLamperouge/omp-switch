@@ -284,11 +284,20 @@ function MainLayout() {
             onOpenModels={() => setActiveView("models")}
           />
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center text-zinc-500">
-            <p>{t("emptyPrompt")}</p>
-            {!status?.liveExists && (
-              <p className="text-xs">{t("noLiveConfigWarning")}</p>
-            )}
+          <div className="flex flex-1 flex-col items-center justify-center gap-3.5 text-center text-zinc-500">
+            <div className="flex h-14 w-14 items-center justify-center rounded-3xl border border-zinc-200/80 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 shadow-2xs">
+              <Info className="h-6 w-6 text-zinc-400 dark:text-zinc-500" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                {t("emptyPrompt")}
+              </p>
+              {!status?.liveExists && (
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 max-w-sm">
+                  {t("noLiveConfigWarning")}
+                </p>
+              )}
+            </div>
           </div>
         )}
       </section>
