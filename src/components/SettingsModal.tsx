@@ -1,7 +1,6 @@
 import {
   Check,
   Globe,
-  Info,
   Monitor,
   Moon,
   Palette,
@@ -195,18 +194,17 @@ export function SettingsModal({ isOpen, onClose }: Props) {
           </div>
 
           {/* About section */}
-          <div className="rounded-2xl border border-app-border bg-app-card-subtle p-3.5">
-            <div className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-              <Info className="h-3.5 w-3.5 text-zinc-400" />
-              <span>{t("aboutApp")}</span>
+          <div className="rounded-2xl border border-app-border bg-app-card-subtle p-3.5 flex items-center gap-3">
+            <img src="/icon.svg" alt="omp-switch" className="h-10 w-10 rounded-xl shadow-xs shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                <span>{t("appName")}</span>
+                <span className="font-mono text-[11px] font-normal text-zinc-400">v0.1.0</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-zinc-400 dark:text-zinc-500 leading-relaxed truncate">
+                OpenCode / OMP Model & Config Switcher.
+              </p>
             </div>
-            <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-              <span>{t("appName")}</span>
-              <span className="font-mono text-[11px] text-zinc-400">v0.1.0</span>
-            </div>
-            <p className="mt-1 text-[11px] text-zinc-400 dark:text-zinc-500 leading-relaxed">
-              OpenCode / OMP Model & Config Switcher.
-            </p>
           </div>
         </div>
 

@@ -23,9 +23,11 @@ pnpm build
 # 运行 Rust 测试
 cargo test --manifest-path src-tauri/Cargo.toml -- --test-threads=1
 
-# 生产打包（生成 .app 与 .dmg）
-CI=true pnpm tauri build
+# 生产打包（macOS：生成带安装背景图和固定图标布局的 .app 与 .dmg）
+pnpm dmg
 ```
+
+`pnpm dmg` 仅适用于 macOS：它使用 Finder 和 `hdiutil` 将 `src-tauri/resources/dmg-background.png` 写入 DMG，并保存 660×400 安装窗口中的图标布局。生成的安装包位于 `src-tauri/target/release/bundle/dmg/`。
 
 ## 项目结构
 

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Dark Gradient -->
+    <linearGradient id="bg-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181B24" />
+      <stop offset="60%" stop-color="#0F1118" />
+      <stop offset="100%" stop-color="#07080C" />
+    </linearGradient>
+
+    <!-- Glass 1 (Back Amber) -->
+    <linearGradient id="glass-amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#D97706" stop-opacity="0.10" />
+    </linearGradient>
+
+    <!-- Glass 2 (Middle Violet) -->
+    <linearGradient id="glass-violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#6D28D9" stop-opacity="0.15" />
+    </linearGradient>
+
+    <!-- Glass 3 (Front Active Cyan) -->
+    <linearGradient id="glass-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.65" />
+      <stop offset="70%" stop-color="#0284C7" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.50" />
+    </linearGradient>
+
+    <!-- Base Dock Glow -->
+    <linearGradient id="dock-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="50%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="neon-cyan" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="card-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-8" dy="16" stdDeviation="14" flood-color="#000000" flood-opacity="0.75" />
+    </filter>
+  </defs>
+
+  <!-- macOS Squircle Canvas Base -->
+  <rect x="32" y="32" width="448" height="448" rx="100" fill="url(#bg-grad-2)" filter="url(#card-shadow)" />
+  <rect x="32" y="32" width="448" height="448" rx="100" fill="none" stroke="#334155" stroke-width="2" opacity="0.6" />
+
+  <!-- Ambient Light Reflection -->
+  <ellipse cx="256" cy="120" rx="180" ry="80" fill="#38BDF8" opacity="0.07" filter="url(#neon-cyan)" />
+
+  <!-- Isometric Dock Stand (Bottom) -->
+  <g filter="url(#card-shadow)">
+    <!-- Dock Base 3D Extrusion -->
+    <path d="M 120 340 L 256 408 L 392 340 L 256 272 Z" fill="#0B0F17" stroke="#1E293B" stroke-width="2" />
+    <path d="M 120 340 L 120 365 L 256 433 L 256 408 Z" fill="#05070C" />
+    <path d="M 392 340 L 392 365 L 256 433 L 256 408 Z" fill="#090D14" />
+    <!-- Magnetic Dock Light Track -->
+    <ellipse cx="256" cy="340" rx="90" ry="24" fill="none" stroke="#00F2FE" stroke-width="3" opacity="0.8" filter="url(#neon-cyan)" />
+    <ellipse cx="256" cy="340" rx="90" ry="24" fill="#00F2FE" opacity="0.15" />
+  </g>
+
+  <!-- Profile Card 1 (Back - Amber Drift/Backup) -->
+  <g transform="translate(256, 210) rotate(-18) translate(-256, -210)" opacity="0.85">
+    <rect x="210" y="110" width="160" height="210" rx="20" fill="url(#glass-amber)" stroke="#F59E0B" stroke-width="2.5" stroke-opacity="0.8" />
+    <!-- Mini File Tab -->
+    <path d="M 230 110 L 270 110 L 285 130 L 350 130" stroke="#F59E0B" stroke-width="2" fill="none" opacity="0.6" />
+    <!-- Mock YAML lines -->
+    <line x1="235" y1="160" x2="280" y2="160" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+    <line x1="235" y1="180" x2="310" y2="180" stroke="#FDE68A" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+    <line x1="250" y1="200" x2="330" y2="200" stroke="#FDE68A" stroke-width="2" stroke-linecap="round" opacity="0.3" />
+  </g>
+
+  <!-- Profile Card 2 (Middle - Violet Global Models) -->
+  <g transform="translate(256, 220) rotate(-6) translate(-256, -220)" opacity="0.9">
+    <rect x="185" y="130" width="165" height="215" rx="20" fill="url(#glass-violet)" stroke="#A78BFA" stroke-width="2.5" stroke-opacity="0.85" />
+    <!-- Mini File Tab -->
+    <path d="M 205 130 L 250 130 L 265 150 L 330 150" stroke="#A78BFA" stroke-width="2" fill="none" opacity="0.6" />
+    <!-- Mock Models Node -->
+    <circle cx="230" cy="180" r="5" fill="#C084FC" />
+    <line x1="245" y1="180" x2="310" y2="180" stroke="#E9D5FF" stroke-width="2.5" stroke-linecap="round" opacity="0.5" />
+    <circle cx="230" cy="210" r="5" fill="#C084FC" />
+    <line x1="245" y1="210" x2="295" y2="210" stroke="#E9D5FF" stroke-width="2.5" stroke-linecap="round" opacity="0.5" />
+  </g>
+
+  <!-- Profile Card 3 (Front - Active Profile Cyan) -->
+  <g filter="url(#card-shadow)">
+    <g transform="translate(256, 230) rotate(8) translate(-256, -230)">
+      <!-- Card Body with Glass Fill -->
+      <rect x="155" y="140" width="175" height="225" rx="22" fill="url(#glass-cyan)" stroke="#67E8F9" stroke-width="3" />
+      
+      <!-- Frosted Inner Sheen -->
+      <path d="M 158 143 L 327 143 C 335 143 340 148 340 156 L 340 220 L 158 290 Z" fill="#FFFFFF" opacity="0.12" />
+
+      <!-- Active Status Badge on Card -->
+      <rect x="175" y="165" width="60" height="24" rx="12" fill="#0891B2" stroke="#22D3EE" stroke-width="1.5" />
+      <circle cx="187" cy="177" r="4" fill="#67E8F9" filter="url(#neon-cyan)" />
+      <line x1="198" y1="177" x2="223" y2="177" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+
+      <!-- Active Switcher Toggle Graphic on Active Card -->
+      <g transform="translate(180, 220)">
+        <rect x="0" y="0" width="120" height="48" rx="24" fill="#0F172A" stroke="#38BDF8" stroke-width="2" />
+        <!-- Toggle ON Knob -->
+        <circle cx="92" cy="24" r="18" fill="#38BDF8" stroke="#FFFFFF" stroke-width="2" filter="url(#neon-cyan)" />
+        <path d="M 87 24 L 91 28 L 98 20" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+        <!-- Track line -->
+        <line x1="20" y1="24" x2="65" y2="24" stroke="#0284C7" stroke-width="3" stroke-linecap="round" />
+      </g>
+
+      <!-- Bottom Status Dots -->
+      <circle cx="185" cy="325" r="4" fill="#10B981" filter="url(#neon-cyan)" />
+      <line x1="198" y1="325" x2="280" y2="325" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round" opacity="0.6" />
+    </g>
+  </g>
+
+  <!-- Sparkle Flare on Top Right of Active Card -->
+  <g transform="translate(335, 175)" filter="url(#neon-cyan)">
+    <path d="M 0 -12 L 3 -3 L 12 0 L 3 3 L 0 12 L -3 3 L -12 0 L -3 -3 Z" fill="#FFFFFF" />
+  </g>
+
+</svg>

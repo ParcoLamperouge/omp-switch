@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "dmg": "pnpm tauri build --bundles dmg && ./scripts/finalize-dmg-background.sh",
     "preview": "vite preview",
     "tauri": "tauri"
   },

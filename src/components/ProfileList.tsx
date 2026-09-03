@@ -104,9 +104,12 @@ export function ProfileList({
       {/* Top Section: Independent Models Library */}
       <div className="p-3 border-b border-app-border">
         <div className="mb-2 flex items-center justify-between px-1">
-          <span className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
-            {t("globalLibrarySection")}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <img src="/icon.svg" alt="omp-switch" className="h-4 w-4 rounded-xs shadow-2xs" />
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 dark:text-zinc-500 uppercase">
+              {t("globalLibrarySection")}
+            </span>
+          </div>
           <button
             onClick={onOpenSettings}
             className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-200/70 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-hidden"
