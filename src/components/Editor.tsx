@@ -7,8 +7,8 @@ import {
   Save,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type { Profile, ValidationIssue } from "../lib/api";
-import { updateProfile, validatePair } from "../lib/api";
+import type { DiscoveredModel, Profile, ValidationIssue } from "../lib/api";
+import { updateProfile, updateProfileConfig, validatePair } from "../lib/api";
 import { useI18n } from "../lib/i18n";
 import { ConfigVisualizer } from "./ConfigVisualizer";
 import { ValidationPanel } from "./ValidationPanel";
@@ -16,23 +16,28 @@ import { ValidationPanel } from "./ValidationPanel";
 interface Props {
   profile: Profile;
   globalModelsYml: string;
+  discoveredModels: DiscoveredModel[];
   activeId: string | null;
   effectiveId: string | null;
   onChange: () => void;
   onOpenModels?: () => void;
+  onApply?: () => void | Promise<void>;
 }
 
 export function Editor({
   profile,
   globalModelsYml,
+  discoveredModels,
   activeId,
   effectiveId,
   onChange,
   onOpenModels,
+  onApply,
 }: Props) {
   const { t } = useI18n();
   const [name, setName] = useState(profile.name);
   const [configYml, setConfigYml] = useState(profile.configYml);
+  const [savedConfigYml, setSavedConfigYml] = useState(profile.configYml);
   const [isEditing, setIsEditing] = useState(false);
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -44,6 +49,7 @@ export function Editor({
   useEffect(() => {
     setName(profile.name);
     setConfigYml(profile.configYml);
+    setSavedConfigYml(profile.configYml);
     setIsEditing(false);
     setSaveError(null);
   }, [profile]);
@@ -53,14 +59,14 @@ export function Editor({
       window.clearTimeout(debounceRef.current);
     }
     debounceRef.current = window.setTimeout(() => {
-      validatePair(globalModelsYml, configYml).then(setIssues);
+      validatePair(globalModelsYml, configYml, discoveredModels).then(setIssues);
     }, 500);
     return () => {
       if (debounceRef.current) {
         window.clearTimeout(debounceRef.current);
       }
     };
-  }, [globalModelsYml, configYml]);
+  }, [globalModelsYml, configYml, discoveredModels]);
 
   async function handleSave() {
     setSaveError(null);
@@ -80,22 +86,33 @@ export function Editor({
 
   function handleCancelEdit() {
     setName(profile.name);
-    setConfigYml(profile.configYml);
+    setConfigYml(savedConfigYml);
     setIsEditing(false);
     setSaveError(null);
   }
 
-  async function handleVisualConfigChange(newConfigYml: string) {
-    setConfigYml(newConfigYml);
+  async function handleVisualSave() {
+    setSaveError(null);
+    setSaving(true);
     try {
-      await updateProfile(profile.id, name, globalModelsYml, newConfigYml);
-      onChange();
+      await updateProfileConfig(profile.id, configYml);
+      setSavedConfigYml(configYml);
+      setSaveSuccess(true);
+      window.setTimeout(() => setSaveSuccess(false), 2000);
+      await onApply?.();
     } catch (e) {
       setSaveError(String(e));
+    } finally {
+      setSaving(false);
     }
   }
 
-  const isDirty = name !== profile.name || configYml !== profile.configYml;
+  function handleVisualConfigChange(newConfigYml: string) {
+    setConfigYml(newConfigYml);
+    setSaveError(null);
+  }
+
+  const isDirty = name !== profile.name || configYml !== savedConfigYml;
   const isEffective = effectiveId === profile.id;
 
   useEffect(() => {
@@ -229,7 +246,12 @@ export function Editor({
           <ConfigVisualizer
             configYml={configYml}
             modelsYml={globalModelsYml}
+            discoveredModels={discoveredModels}
             onUpdateConfigYml={handleVisualConfigChange}
+            onSaveChanges={handleVisualSave}
+            onDiscardChanges={handleCancelEdit}
+            hasUnsavedChanges={isDirty}
+            saving={saving}
             onEdit={() => setIsEditing(true)}
           />
         )}

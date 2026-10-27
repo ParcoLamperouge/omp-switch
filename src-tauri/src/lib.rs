@@ -1,4 +1,5 @@
 mod detect;
+mod models;
 mod paths;
 mod profile;
 mod switch;
@@ -9,63 +10,112 @@ use switch::LiveStatus;
 use validate::ValidationIssue;
 
 #[tauri::command]
-fn list_profiles() -> Result<Vec<ProfileMeta>, String> {
-    profile::list_profiles().map_err(|e| e.to_string())
+async fn list_profiles() -> Result<Vec<ProfileMeta>, String> {
+    tauri::async_runtime::spawn_blocking(|| profile::list_profiles().map_err(|e| e.to_string()))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn read_profile(id: String) -> Result<Profile, String> {
-    profile::read_profile(&id).map_err(|e| e.to_string())
+async fn read_profile(id: String) -> Result<Profile, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::read_profile(&id).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn create_profile(
+async fn create_profile(
     name: String,
     models_yml: String,
     config_yml: String,
 ) -> Result<ProfileMeta, String> {
-    profile::create_profile(&name, &models_yml, &config_yml).map_err(|e| e.to_string())
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::create_profile(&name, &models_yml, &config_yml).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn import_live(name: String) -> Result<ProfileMeta, String> {
-    switch::import_live(&name).map_err(|e| e.to_string())
+async fn import_live(name: String) -> Result<ProfileMeta, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        switch::import_live(&name).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn duplicate_profile(id: String, name: String) -> Result<ProfileMeta, String> {
-    profile::duplicate_profile(&id, &name).map_err(|e| e.to_string())
+async fn duplicate_profile(id: String, name: String) -> Result<ProfileMeta, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::duplicate_profile(&id, &name).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn update_profile(
+async fn update_profile(
     id: String,
     name: String,
     models_yml: String,
     config_yml: String,
 ) -> Result<(), String> {
-    profile::update_profile(&id, Some(&name), Some(&models_yml), Some(&config_yml))
-        .map_err(|e| e.to_string())
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::update_profile(&id, Some(&name), Some(&models_yml), Some(&config_yml))
+            .map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn delete_profile(id: String) -> Result<(), String> {
-    profile::delete_profile(&id).map_err(|e| e.to_string())
+async fn delete_profile(id: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::delete_profile(&id).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn switch_profile(id: String) -> Result<(), String> {
-    switch::switch_profile(&id).map_err(|e| e.to_string())
+async fn switch_profile(id: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        switch::switch_profile(&id).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn get_status() -> LiveStatus {
-    switch::live_status()
+async fn get_status() -> LiveStatus {
+    tauri::async_runtime::spawn_blocking(switch::live_status)
+        .await
+        .unwrap_or_else(|_| switch::live_status())
 }
 
 #[tauri::command]
-fn validate_pair(models_yml: String, config_yml: String) -> Vec<ValidationIssue> {
-    validate::validate_pair(&models_yml, &config_yml)
+async fn validate_pair(
+    models_yml: String,
+    config_yml: String,
+    discovered_models: Vec<models::AvailableModel>,
+) -> Vec<ValidationIssue> {
+    tauri::async_runtime::spawn_blocking(move || {
+        validate::validate_pair_with_discovered(&models_yml, &config_yml, &discovered_models)
+    })
+    .await
+    .unwrap_or_default()
+}
+
+#[tauri::command]
+async fn update_profile_config(id: String, config_yml: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::update_profile_config(&id, &config_yml).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -74,13 +124,26 @@ fn check_running() -> Vec<String> {
 }
 
 #[tauri::command]
-fn read_global_models() -> Result<String, String> {
-    profile::read_global_models().map_err(|e| e.to_string())
+async fn read_global_models() -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(|| profile::read_global_models().map_err(|e| e.to_string()))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn save_global_models(models_yml: String) -> Result<(), String> {
-    profile::save_global_models(&models_yml).map_err(|e| e.to_string())
+async fn save_global_models(models_yml: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        profile::save_global_models(&models_yml).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn list_authenticated_models() -> Vec<models::AvailableModel> {
+    tauri::async_runtime::spawn_blocking(models::list_authenticated_models)
+        .await
+        .unwrap_or_default()
 }
 
 #[tauri::command]
@@ -101,7 +164,9 @@ pub fn run() {
             read_profile,
             read_global_models,
             save_global_models,
+            list_authenticated_models,
             create_profile,
+            update_profile_config,
             import_live,
             duplicate_profile,
             update_profile,

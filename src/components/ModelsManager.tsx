@@ -9,15 +9,16 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "../lib/i18n";
-import { parseModelsYaml } from "../lib/yamlUtils";
+import { parseModelsYaml, type DiscoveredModel } from "../lib/yamlUtils";
 import { ModelsVisualizer } from "./ModelsVisualizer";
 
 interface Props {
   modelsYml: string;
+  discoveredModels?: DiscoveredModel[];
   onSave: (newModelsYml: string) => Promise<void>;
 }
 
-export function ModelsManager({ modelsYml, onSave }: Props) {
+export function ModelsManager({ modelsYml, discoveredModels = [], onSave }: Props) {
   const { t } = useI18n();
   const [content, setContent] = useState(modelsYml);
   const [isEditing, setIsEditing] = useState(false);
@@ -169,6 +170,7 @@ export function ModelsManager({ modelsYml, onSave }: Props) {
         ) : (
           <ModelsVisualizer
             modelsYml={modelsYml}
+            discoveredModels={discoveredModels}
             onEdit={() => setIsEditing(true)}
           />
         )}

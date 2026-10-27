@@ -11,6 +11,14 @@ pub struct ValidationIssue {
 }
 
 pub fn validate_pair(models_yml: &str, config_yml: &str) -> Vec<ValidationIssue> {
+    validate_pair_with_discovered(models_yml, config_yml, &[])
+}
+
+pub fn validate_pair_with_discovered(
+    models_yml: &str,
+    config_yml: &str,
+    discovered_models: &[crate::models::AvailableModel],
+) -> Vec<ValidationIssue> {
     let mut issues = Vec::new();
 
     let models: Option<Value> = match serde_yaml::from_str(models_yml) {
@@ -92,6 +100,14 @@ pub fn validate_pair(models_yml: &str, config_yml: &str) -> Vec<ValidationIssue>
             }
             provider_models.insert(provider_name, ids);
         }
+    }
+
+    for model in discovered_models {
+        provider_names.insert(model.provider.clone());
+        provider_models
+            .entry(model.provider.clone())
+            .or_default()
+            .insert(model.model_id.clone());
     }
 
     // Helper to validate a provider/model reference.
@@ -218,6 +234,18 @@ modelProviderOrder:
         let config = "modelRoles:\n  default: metarouter/not-exist\nenabledModels:\n  - metarouter/not-exist\n";
         let issues = validate_pair(MODELS, config);
         assert_eq!(issues.iter().filter(|i| i.message.contains("不存在的 model")).count(), 2);
+    }
+
+    #[test]
+    fn discovered_model_is_valid_without_models_yaml_entry() {
+        let discovered = [crate::models::AvailableModel {
+            provider: "openai-codex".to_string(),
+            model_id: "gpt-5.4".to_string(),
+            display_name: Some("GPT-5.4".to_string()),
+        }];
+        let config = "modelRoles:\n  default: openai-codex/gpt-5.4\n";
+        let issues = validate_pair_with_discovered("providers: {}\n", config, &discovered);
+        assert!(issues.is_empty(), "{issues:?}");
     }
 
     #[test]

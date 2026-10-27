@@ -10,14 +10,19 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useI18n } from "../lib/i18n";
-import { parseModelsYaml } from "../lib/yamlUtils";
+import {
+  mergeDiscoveredProviders,
+  parseModelsYaml,
+  type DiscoveredModel,
+} from "../lib/yamlUtils";
 
 interface Props {
   modelsYml: string;
+  discoveredModels?: DiscoveredModel[];
   onEdit: () => void;
 }
 
-export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
+export function ModelsVisualizer({ modelsYml, discoveredModels = [], onEdit }: Props) {
   const { t } = useI18n();
   const [showRaw, setShowRaw] = useState(false);
   const parsed = useMemo(() => parseModelsYaml(modelsYml), [modelsYml]);
@@ -42,7 +47,10 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
     );
   }
 
-  const providers = parsed.providers;
+  const providers = useMemo(
+    () => mergeDiscoveredProviders(parsed.providers, discoveredModels),
+    [parsed.providers, discoveredModels]
+  );
   const totalModels = providers.reduce((acc, p) => acc + p.models.length, 0);
 
   if (providers.length === 0) {
@@ -119,7 +127,12 @@ export function ModelsVisualizer({ modelsYml, onEdit }: Props) {
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                {provider.hasApiKey ? (
+                {provider.authenticated ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300">
+                    <CheckCircle2 className="h-3 w-3" />
+                    {t("authenticatedProvider")}
+                  </span>
+                ) : provider.hasApiKey ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300">
                     <KeyRound className="h-3 w-3" />
                     {t("keyConfigured")}

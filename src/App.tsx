@@ -1,10 +1,10 @@
 import { AlertCircle, CheckCircle2, Info } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 import { Editor } from "./components/Editor";
 import { ModelsManager } from "./components/ModelsManager";
 import { ProfileList } from "./components/ProfileList";
 import { SettingsModal } from "./components/SettingsModal";
-import type { LiveStatus, Profile, ProfileMeta } from "./lib/api";
+import type { DiscoveredModel, LiveStatus, Profile, ProfileMeta } from "./lib/api";
 import {
   checkRunning,
   createProfile,
@@ -13,6 +13,7 @@ import {
   getStatus,
   importLive,
   listProfiles,
+  listAuthenticatedModels,
   readGlobalModels,
   readProfile,
   revealLiveDir,
@@ -33,6 +34,7 @@ function MainLayout() {
   const [profiles, setProfiles] = useState<ProfileMeta[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [discoveredModels, setDiscoveredModels] = useState<DiscoveredModel[]>([]);
   const [globalModelsYml, setGlobalModelsYml] = useState<string>("providers:\n");
   const [activeView, setActiveView] = useState<"profile" | "models">("profile");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -57,9 +59,14 @@ function MainLayout() {
         getStatus(),
         readGlobalModels(),
       ]);
-      setProfiles(profilesList);
-      setStatus(currentStatus);
-      setGlobalModelsYml(modelsContent);
+      startTransition(() => {
+        setProfiles(profilesList);
+        setStatus(currentStatus);
+        setGlobalModelsYml(modelsContent);
+      });
+      void listAuthenticatedModels()
+        .then(setDiscoveredModels)
+        .catch(() => setDiscoveredModels([]));
 
       let nextId: string | null = selectId ?? null;
       if (!nextId) {
@@ -76,14 +83,18 @@ function MainLayout() {
         setSelectedId(nextId);
         try {
           const p = await readProfile(nextId);
-          setProfile(p);
+          startTransition(() => setProfile(p));
         } catch {
-          setSelectedId(null);
-          setProfile(null);
+          startTransition(() => {
+            setSelectedId(null);
+            setProfile(null);
+          });
         }
       } else {
-        setSelectedId(null);
-        setProfile(null);
+        startTransition(() => {
+          setSelectedId(null);
+          setProfile(null);
+        });
       }
     } catch (e) {
       console.error(e);
@@ -107,7 +118,9 @@ function MainLayout() {
       setProfile(null);
       return;
     }
-    readProfile(selectedId).then(setProfile).catch(() => setProfile(null));
+    readProfile(selectedId)
+      .then((nextProfile) => startTransition(() => setProfile(nextProfile)))
+      .catch(() => startTransition(() => setProfile(null)));
   }, [selectedId]);
 
   async function handleSwitchProfile(id: string) {
@@ -117,7 +130,9 @@ function MainLayout() {
     try {
       const procs = await checkRunning();
       await switchProfile(id);
-      await loadAll(id);
+      // Keep the switch interaction responsive; refresh the view in the background.
+      setActiveView("profile");
+      void loadAll(id);
 
       if (procs.length > 0) {
         setToast({
@@ -272,15 +287,18 @@ function MainLayout() {
         {activeView === "models" ? (
           <ModelsManager
             modelsYml={globalModelsYml}
+            discoveredModels={discoveredModels}
             onSave={handleSaveGlobalModels}
           />
         ) : profile && status ? (
           <Editor
             profile={profile}
             globalModelsYml={globalModelsYml}
+            discoveredModels={discoveredModels}
             activeId={status.activeId}
             effectiveId={status.effectiveId}
             onChange={() => loadAll()}
+            onApply={() => handleSwitchProfile(profile.id)}
             onOpenModels={() => setActiveView("models")}
           />
         ) : (

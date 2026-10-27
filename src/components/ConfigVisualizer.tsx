@@ -7,30 +7,44 @@ import {
   Code,
   Layers,
   Plus,
+  RotateCcw,
+  Save,
   Sparkles,
   Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useI18n } from "../lib/i18n";
+import type { DiscoveredModel } from "../lib/api";
 import {
   deleteRoleInConfigYaml,
   EFFORT_LEVELS,
   getGroupedModelOptions,
   parseConfigYaml,
+  updateEnabledModelsInConfigYaml,
   updateRoleInConfigYaml,
 } from "../lib/yamlUtils";
 
 interface Props {
   configYml: string;
   modelsYml: string;
+  discoveredModels?: DiscoveredModel[];
   onUpdateConfigYml?: (newConfigYml: string) => void;
+  onSaveChanges?: () => void;
+  onDiscardChanges?: () => void;
+  hasUnsavedChanges?: boolean;
+  saving?: boolean;
   onEdit: () => void;
 }
 
 export function ConfigVisualizer({
   configYml,
   modelsYml,
+  discoveredModels = [],
   onUpdateConfigYml,
+  onSaveChanges,
+  onDiscardChanges,
+  hasUnsavedChanges = false,
+  saving = false,
   onEdit,
 }: Props) {
   const { t } = useI18n();
@@ -39,11 +53,12 @@ export function ConfigVisualizer({
   const [newRoleName, setNewRoleName] = useState("");
   const [newRoleModel, setNewRoleModel] = useState("");
   const [newRoleEffort, setNewRoleEffort] = useState("");
+  const [newEnabledModel, setNewEnabledModel] = useState("");
 
   const parsed = useMemo(() => parseConfigYaml(configYml), [configYml]);
   const groupedModelOptions = useMemo(
-    () => getGroupedModelOptions(modelsYml),
-    [modelsYml]
+    () => getGroupedModelOptions(modelsYml, discoveredModels),
+    [modelsYml, discoveredModels]
   );
 
   const allAvailableRefs = useMemo(() => {
@@ -55,6 +70,51 @@ export function ConfigVisualizer({
     }
     return refs;
   }, [groupedModelOptions]);
+
+  const enabledModelBases = useMemo(
+    () =>
+      new Set(
+        parsed.enabledModels.map((ref) =>
+          ref.provider ? `${ref.provider}/${ref.modelId}` : ref.modelId
+        )
+      ),
+    [parsed.enabledModels]
+  );
+
+  const addableEnabledModels = useMemo(
+    () =>
+      groupedModelOptions.flatMap((group) =>
+        group.models.filter((model) => !enabledModelBases.has(model.fullRef))
+      ),
+    [groupedModelOptions, enabledModelBases]
+  );
+
+  const selectedEnabledModel = addableEnabledModels.some(
+    (model) => model.fullRef === newEnabledModel
+  )
+    ? newEnabledModel
+    : addableEnabledModels[0]?.fullRef || "";
+
+  function updateEnabledModels(nextModels: string[]) {
+    if (!onUpdateConfigYml) return;
+    onUpdateConfigYml(updateEnabledModelsInConfigYaml(configYml, nextModels));
+  }
+
+  function handleAddEnabledModel() {
+    if (!selectedEnabledModel || enabledModelBases.has(selectedEnabledModel)) return;
+    updateEnabledModels([
+      ...parsed.enabledModels.map((ref) => ref.raw),
+      selectedEnabledModel,
+    ]);
+  }
+
+  function handleRemoveEnabledModel(index: number) {
+    updateEnabledModels(
+      parsed.enabledModels
+        .filter((_, itemIndex) => itemIndex !== index)
+        .map((ref) => ref.raw)
+    );
+  }
 
   const firstModelRef = useMemo(() => {
     return groupedModelOptions[0]?.models[0]?.fullRef || "";
@@ -120,7 +180,7 @@ export function ConfigVisualizer({
 
   const isEmpty = totalRoles === 0 && totalEnabled === 0 && parsed.modelProviderOrder.length === 0;
 
-  if (isEmpty) {
+  if (isEmpty && !onUpdateConfigYml) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300/80 p-8 text-center dark:border-zinc-800">
         <Bot className="mb-3 h-10 w-10 text-zinc-400 dark:text-zinc-600" />
@@ -142,6 +202,40 @@ export function ConfigVisualizer({
 
   return (
     <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-1">
+      {onSaveChanges && onDiscardChanges && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-muted-border bg-brand-muted px-4 py-3 shadow-2xs">
+          <div className="flex items-center gap-2 text-xs">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                hasUnsavedChanges ? "bg-amber-500" : "bg-emerald-500"
+              }`}
+            />
+            <span className="font-medium text-brand-muted-fg">
+              {hasUnsavedChanges ? t("hasUnsavedChanges") : t("syncedBadge")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onDiscardChanges}
+              disabled={!hasUnsavedChanges || saving}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card px-3.5 py-2 text-xs font-medium text-zinc-700 transition hover:bg-app-card-subtle disabled:cursor-not-allowed disabled:opacity-40 dark:text-zinc-200"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>{t("discardChangesBtn")}</span>
+            </button>
+            <button
+              type="button"
+              onClick={onSaveChanges}
+              disabled={!hasUnsavedChanges || saving}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-xs font-semibold text-brand-fg shadow-sm transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-zinc-400 dark:disabled:bg-zinc-700"
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span>{saving ? t("savingBtn") : t("saveApplyBtn")}</span>
+            </button>
+          </div>
+        </div>
+      )}
       {/* Model Roles Section */}
       <div className="rounded-2xl border border-zinc-200/80 bg-app-card p-4.5 shadow-2xs dark:border-app-border dark:bg-app-card">
         <div className="mb-3.5 flex items-center justify-between">
@@ -151,15 +245,17 @@ export function ConfigVisualizer({
               {t("modelRolesTitle")}
             </h3>
           </div>
-          {onUpdateConfigYml && (
-            <button
-              onClick={() => setAddingRole(!addingRole)}
-              className="flex items-center gap-1 rounded-xl bg-brand-muted border border-brand-muted-border px-3 py-1 text-xs font-bold text-brand-muted-fg hover:bg-brand/15 transition shadow-2xs"
-            >
-              <Plus className="h-3 w-3" />
-              <span>{t("addRoleBtn")}</span>
-            </button>
-          )}
+          <div className="flex items-center gap-1.5">
+            {onUpdateConfigYml && (
+              <button
+                onClick={() => setAddingRole(!addingRole)}
+                className="flex items-center gap-1 rounded-xl bg-brand-muted border border-brand-muted-border px-3 py-1 text-xs font-bold text-brand-muted-fg hover:bg-brand/15 transition shadow-2xs"
+              >
+                <Plus className="h-3 w-3" />
+                <span>{t("addRoleBtn")}</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Add Role Inline Form */}
@@ -348,24 +444,55 @@ export function ConfigVisualizer({
       </div>
 
       {/* Enabled Models Section */}
-      {totalEnabled > 0 && (
-        <div className="rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                {t("enabledModelsTitle")}
-              </h3>
-            </div>
-            <span className="rounded-full bg-app-card-subtle border border-app-border px-2 py-0.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-              {t("totalCount", { count: totalEnabled })}
-            </span>
+      <div className="rounded-2xl border border-app-border bg-app-card p-4 shadow-2xs">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+            <h3 className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+              {t("enabledModelsTitle")}
+            </h3>
           </div>
+          <span className="rounded-full bg-app-card-subtle border border-app-border px-2 py-0.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            {t("totalCount", { count: totalEnabled })}
+          </span>
+        </div>
 
+        {onUpdateConfigYml && (
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row">
+            <select
+              value={selectedEnabledModel}
+              onChange={(e) => setNewEnabledModel(e.target.value)}
+              disabled={addableEnabledModels.length === 0}
+              aria-label={t("addEnabledModelLabel")}
+              className="min-w-0 flex-1 rounded-xl border border-app-border bg-app-card-subtle px-3 py-2 font-mono text-xs text-zinc-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100"
+            >
+              {addableEnabledModels.length === 0 ? (
+                <option value="">{t("allModelsEnabled")}</option>
+              ) : (
+                addableEnabledModels.map((model) => (
+                  <option key={model.fullRef} value={model.fullRef}>
+                    {model.fullRef}
+                  </option>
+                ))
+              )}
+            </select>
+            <button
+              type="button"
+              onClick={handleAddEnabledModel}
+              disabled={!selectedEnabledModel}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand px-3.5 py-2 text-xs font-semibold text-brand-fg transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-zinc-400 dark:disabled:bg-zinc-700"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>{t("addEnabledModelBtn")}</span>
+            </button>
+          </div>
+        )}
+
+        {totalEnabled > 0 ? (
           <div className="flex flex-wrap gap-2">
             {parsed.enabledModels.map((ref, idx) => (
               <div
-                key={idx}
+                key={`${ref.raw}-${idx}`}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-app-border bg-app-card-subtle px-2.5 py-1.5 font-mono text-xs text-zinc-800 shadow-2xs dark:text-zinc-200"
               >
                 {ref.provider && (
@@ -379,11 +506,26 @@ export function ConfigVisualizer({
                     :{ref.effort}
                   </span>
                 )}
+                {onUpdateConfigYml && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveEnabledModel(idx)}
+                    title={t("removeEnabledModelBtn")}
+                    aria-label={`${t("removeEnabledModelBtn")}: ${ref.raw}`}
+                    className="ml-0.5 rounded-md p-0.5 text-zinc-400 transition hover:bg-rose-100 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="rounded-xl border border-dashed border-app-border px-3 py-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
+            {t("noEnabledModels")}
+          </p>
+        )}
+      </div>
 
       {/* Provider Priority Order Section */}
       {parsed.modelProviderOrder.length > 0 && (

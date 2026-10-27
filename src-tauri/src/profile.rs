@@ -235,6 +235,21 @@ pub fn update_profile(
     Ok(())
 }
 
+/// Persist a config-only edit without rewriting the unchanged models snapshot.
+pub fn update_profile_config(id: &str, config_yml: &str) -> Result<(), SwitchError> {
+    let mut profile = read_profile(id)?;
+    let issues = validate_pair(&profile.models_yml, config_yml);
+    if issues.iter().any(|i| i.level == "error") {
+        return Err(SwitchError::Validation(issues));
+    }
+
+    profile.meta.updated_at = now_rfc3339();
+    let dir = paths::profiles_dir().join(id);
+    atomic_write(&dir.join("meta.json"), &serde_json::to_string_pretty(&profile.meta)?)?;
+    atomic_write(&dir.join("config.yml"), config_yml)?;
+    Ok(())
+}
+
 pub fn duplicate_profile(id: &str, name: &str) -> Result<ProfileMeta, SwitchError> {
     let source = read_profile(id)?;
     create_profile(name, &source.models_yml, &source.config_yml)
@@ -418,5 +433,17 @@ mod tests {
         let p = read_profile(&dup.id).unwrap();
         assert_eq!(p.models_yml, "m: 1");
         assert_eq!(p.config_yml, "c: 1");
+    }
+
+    #[test]
+    fn test_update_profile_config_preserves_models_snapshot() {
+        let (_tmp, _guard) = setup();
+        let original = create_profile("Config only", "models: yes", "config: old").unwrap();
+
+        update_profile_config(&original.id, "config: new").unwrap();
+
+        let updated = read_profile(&original.id).unwrap();
+        assert_eq!(updated.models_yml, "models: yes");
+        assert_eq!(updated.config_yml, "config: new");
     }
 }

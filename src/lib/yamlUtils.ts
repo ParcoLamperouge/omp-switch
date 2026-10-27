@@ -59,6 +59,7 @@ export interface ParsedProvider {
   baseUrl?: string;
   api?: string;
   hasApiKey: boolean;
+  authenticated?: boolean;
   models: ProviderModel[];
 }
 
@@ -186,9 +187,51 @@ export function parseModelsYaml(content: string): ParsedModels {
   }
 }
 
-export function getGroupedModelOptions(modelsYml: string): GroupedModelOption[] {
+export interface DiscoveredModel {
+  provider: string;
+  modelId: string;
+  displayName?: string;
+}
+
+/** Merge OMP's locally authenticated models into the models library view. */
+export function mergeDiscoveredProviders(
+  providers: ParsedProvider[],
+  discoveredModels: DiscoveredModel[] = []
+): ParsedProvider[] {
+  const merged = providers.map((provider) => ({ ...provider, models: [...provider.models] }));
+  const byProvider = new Map(merged.map((provider) => [provider.name, provider]));
+
+  for (const model of discoveredModels) {
+    if (!model.provider || !model.modelId) continue;
+
+    let provider = byProvider.get(model.provider);
+    if (!provider) {
+      provider = {
+        name: model.provider,
+        hasApiKey: false,
+        authenticated: true,
+        models: [],
+      };
+      merged.push(provider);
+      byProvider.set(provider.name, provider);
+    } else {
+      provider.authenticated = true;
+    }
+
+    if (!provider.models.some((item) => item.id === model.modelId)) {
+      provider.models.push({ id: model.modelId, name: model.displayName });
+    }
+  }
+
+  return merged;
+}
+
+export function getGroupedModelOptions(
+  modelsYml: string,
+  discoveredModels: DiscoveredModel[] = []
+): GroupedModelOption[] {
   const parsed = parseModelsYaml(modelsYml);
-  return parsed.providers.map((p) => ({
+  const groups = parsed.providers.map((p) => ({
     provider: p.name,
     models: p.models.map((m) => ({
       fullRef: `${p.name}/${m.id}`,
@@ -196,6 +239,27 @@ export function getGroupedModelOptions(modelsYml: string): GroupedModelOption[] 
       displayName: m.displayName || m.name || m.id,
     })),
   }));
+  const groupByProvider = new Map(groups.map((group) => [group.provider, group]));
+
+  for (const model of discoveredModels) {
+    if (!model.provider || !model.modelId) continue;
+    let group = groupByProvider.get(model.provider);
+    if (!group) {
+      group = { provider: model.provider, models: [] };
+      groups.push(group);
+      groupByProvider.set(model.provider, group);
+    }
+    const fullRef = `${model.provider}/${model.modelId}`;
+    if (!group.models.some((item) => item.fullRef === fullRef)) {
+      group.models.push({
+        fullRef,
+        modelId: model.modelId,
+        displayName: model.displayName || model.modelId,
+      });
+    }
+  }
+
+  return groups;
 }
 
 export function updateRoleInConfigYaml(
@@ -231,6 +295,21 @@ export function deleteRoleInConfigYaml(configYml: string, role: string): string 
     if (data.modelRoles && typeof data.modelRoles === "object") {
       delete data.modelRoles[role];
     }
+    return stringify(data);
+  }
+}
+export function updateEnabledModelsInConfigYaml(configYml: string, enabledModels: string[]): string {
+  try {
+    const doc = parseDocument(configYml);
+    if (!doc.contents || typeof doc.contents !== "object") {
+      doc.set("enabledModels", enabledModels);
+      return doc.toString();
+    }
+    doc.set("enabledModels", enabledModels);
+    return doc.toString();
+  } catch {
+    const data = parse(configYml) || {};
+    data.enabledModels = enabledModels;
     return stringify(data);
   }
 }
